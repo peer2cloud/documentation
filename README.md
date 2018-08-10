@@ -1,54 +1,53 @@
 # Documentation
 
 ### small count UTXO
-For split to UTXO use command:
+To split UTXO use a command:
 
 ```
 $ ./acsplit {coin_name} 50
 ```
-if you get error :```{"error":"couldnt create duplicates tx","tag":"xxxxxxxxx"}```, send 0.1 funds from your wallet to same address, wait confimations
-(you can check use command ```komodo-cli -ac_name={coin_name} listtransactions```), and again run command for split
+if you receive error :```{"error":"couldnt create duplicates tx","tag":"xxxxxxxxx"}```, send 0.1 funds from your wallet to same address, wait confirmations
+(you can use command  to check confirmation ```komodo-cli -ac_name={coin_name} listtransactions```), after confirmation run the command for splitting again
 
-### Balance is small <0.2
-You balance, is approaching the critical, it's time to think about how to replenish it
+### Balance is smaller <0.2
+When your balance comes to the critical it’s time to think about topping it up
 
 ### balance is very small <0.05
 
-You balance is very small, If you do not fill it urgently, you will lose notarisations for this fund
+Your balance is very small, If you do not fill it urgently, you will lose notarisations for this fund
 
 ### Last notary BTC was more than 3 hours ago
-
-Your node, not notarised more than 3 hours ago, there may be some problems
+If your node wasn’t notarised more than 3 hours ago there can be some problems
 
 ### Bitcoind process is not running
 
-Check running proccess bitcoind, for start use ```bitconind```  
+Check running process bitcoind, to start use command ```bitconind```  
 
 ### BTC "is_mine" is not true
 
-For you wallet not import key. You can not notary. 
+Your wallet didn’t import the key. You can not notary. To import use command ``` bitcoin-cli importprivkey 1XXXXXXXXXXX```
 
 ### Iguana process is not running
 
-Notarisations not working, this very bad.  
-Check running process iguana, for start use command: ```~/notary.sh```
+Notarisations doesn’t work, this is very bad.  
+Check running process iguana, to start use the command: ```~/notary.sh```
 
-### Wallet size is too big, time to cleanup!
+### Wallet size is too big, time to clean it up!
 
-Notarisations for KMD and BTC is slow. Use instruction for fresh you wallet:
-1. Send BTC away, all of it. If you have access to this wallet other machine, skip this
+Notarisations for KMD and BTC is slow. Use instruction to fresh your wallet:
+1. Send BTC away, all of it. If you have access to this wallet on the other machine, skip this
 ```
 $ bitcoin-cli sendtoaddress "1xxx" {summ}  "" "" true
 ```
 
-2. Send KMD away, all of it. If you have access to this wallet other machine, skip this
+2. Send KMD away, all of it. If you have access to this wallet on the other machine, skip this
 ```
 $ komodo-cli sendtoaddress "Rxxx" {summ} "" "" true
 ```
 
-3. Check balances and resend any until 0.00000000 on both wallets
+3. Check balances and resend any to 0.00000000 on both wallets
 
-4. Stop bitcoind, komodod & iguana
+4. Stop processes bitcoind, komodod & iguana
 ```
 $ pkill -15 iguana
 $ bitcoin-cli stop
@@ -96,7 +95,7 @@ $ komodo-cli getbalance
 $ bitcoin-cli getbalance
 ```
 
-12. Check wallet sizes, should be minimal
+12. Check wallet sizes, they should be minimal
 
 13. Start iguana, dpow
 ```
@@ -112,17 +111,16 @@ $ ./acsplit KMD 50
 $ ./acsplit BTC 30
 ```
  
-Wait some time and verify notarizations are smooth
-
+Wait some time and verify that notarization processes are smooth
 
 ### Balance on node, is not growing for more then 2 hours (check mining)
 
-Balance in your node not growing, check running process mining, if process running, you can check log file ~/.komodo/debug.log
+Balance in your node is not growing, check running process mining, if process running, you can check log file ~/.komodo/debug.log
 
 ### Did not mine block for more then 2.5h in AR node (check mining!)
 
-You node not minre new blocks more 2.5h, check running process mining, if process running, you can check log file ~/.komodo/debug.log
+Your node is not mining new blocks more then 2.5h, check running process mining, if process running, you can check log file ~/.komodo/debug.log
 
 ### Count of komodod processes != 2
 
-One or more process komodod for mining not running. Please check all mining procees.
+One or more process komodod is not running for mining. Please check all mining processes.
