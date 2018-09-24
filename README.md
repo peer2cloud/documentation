@@ -1,5 +1,23 @@
 # Documentation
 
+Table of contents
+=================
+
+<!--ts-->
+   * [small count UTXO](#small-count-utxo)
+   * [Balance is smaller](#balance-is-smaller)
+   * [Installation](#installation)
+   * [Usage](#usage)
+      * [STDIN](#stdin)
+      * [Local files](#local-files)
+      * [Remote files](#remote-files)
+      * [Multiple files](#multiple-files)
+      * [Combo](#combo)
+      * [Auto insert and update TOC](#auto-insert-and-update-toc)
+   * [Tests](#tests)
+   * [Dependency](#dependency)
+<!--te-->
+
 ### small count UTXO
 To split UTXO use a command:
 
