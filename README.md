@@ -4,21 +4,25 @@ Table of contents
 =================
 
 <!--ts-->
-   * [small count UTXO](#small-count-utxo)
+   * [Small count UTXO](#small-count-utxo)
    * [Balance is smaller](#balance-is-smaller)
-   * [Installation](#installation)
-   * [Usage](#usage)
-      * [STDIN](#stdin)
-      * [Local files](#local-files)
-      * [Remote files](#remote-files)
-      * [Multiple files](#multiple-files)
-      * [Combo](#combo)
-      * [Auto insert and update TOC](#auto-insert-and-update-toc)
-   * [Tests](#tests)
+   * [Last notary BTC was more than 3 hours ago](#last-notary-btc-was-more-than-3-hours-ago)
+   * [Bitcoind process is not running](#bitcoind-process-is-not-running)
+   * [BTC "is_mine" is not true](#btc-is_mine-is-not-true)
+   * [Iguana process is not running](#iguana-process-is-not-running)
+   * [Wallet size is too big, time to clean it up!](#wallet-size-is-too-big-time-to-clean-it-up)
+      * [Fresh BTC wallet](#fresh-btc-wallet)
+      * [Fresh KMD wallet](#fresh-kmd-wallet)
+         * [Auto freshing](#auto-freshing)
+         * [Manual freshing](#auto-freshing)
+      * [Fresh other wallet](#fresh-other-wallet)
+   * [Balance on node, is not growing for more then 2 hours check mining](#balance-on-node-is-not-growing-for-more-then-2-hours-check-mining)
+   * [Did not mine block for more then 25h in AR node check mining] (#did-not-mine-block-for more-then-25h-in-ar-node-check-mining)
    * [Dependency](#dependency)
 <!--te-->
 
-### small count UTXO
+### Small count UTXO
+We have scripts for auto slit UTXO. But if when it does not work, we must split in manual, and fix for future auto split.
 To split UTXO use a command:
 
 ```
@@ -27,12 +31,30 @@ $ ./acsplit {coin_name} 50
 if you receive error :```{"error":"couldnt create duplicates tx","tag":"xxxxxxxxx"}```, send 0.1 funds from your wallet to same address, wait confirmations
 (you can use command  to check confirmation ```komodo-cli -ac_name={coin_name} listtransactions```), after confirmation run the command for splitting again
 
-### Balance is smaller <0.2
+### Balance is smaller
+
+You get this message if you balace in fund is < 0.2
 When your balance comes to the critical it’s time to think about topping it up
+You can check balance for this coin in other node, use command:  
+for BTC: ``` bitcoin-cli getbalance ```  
+for KMD: ``` komodo-cli getbalance ```  
+for other coins: ``` komodo-cli -ac_name=COIN_NAME getbalance ```  
+Check fund in other node, if you have enough funds to transfer to another node, transfer funds using the following commands:
+We can look address for transfer, on the node to which you want to transfer funds, use commands:  
+for BTC: ``` echo ${BTC_ADDRESS} ```  
+for KMD and other coins: ``` echo ${KMD_ADDRESS} ```  
+To transfer fund, run command in node, from which you want to transfer funds:  
+for BTC: ``` bitcoin-cli sendtoaddress BTC_ADDRESS_OTHER_NODE COUNT_FUNDS ```  
+for KMD: ``` komodo-cli sendtoaddress KMD_ADDRESS_OTHER_NODE COUNT_FUNDS ```  
+for other coins: ``` komodo-cli -ac_name=COIN_NAME sendtoaddress KMD_ADDRESS_OTHER_NODE COUNT_FUNDS ```  
 
-### balance is very small <0.05
+If you balance is other node small too, you can ask for funds transfer  Kolo in discord chat.
 
-Your balance is very small, If you do not fill it urgently, you will lose notarisations for this fund
+### balance is very small
+
+You get this message if you balace in fund is < 0.05  
+Your balance is very small, If you do not fill it urgently, you will lose notarisations for this fund.
+You must urgently start instructions in [Balance is smaller](#balance-is-smaller)
 
 ### Last notary BTC was more than 3 hours ago
 If your node wasn’t notarised more than 3 hours ago there can be some problems
@@ -52,6 +74,51 @@ Check running process iguana, to start use the command: ```~/notary.sh```
 
 ### Wallet size is too big, time to clean it up!
 
+#### Fresh BTC wallet
+1. Send BTC away, all of it. If you have access to this wallet on the other machine, skip this
+```
+$ bitcoin-cli sendtoaddress "ADDRESS" {summ}  "" "" true
+```
+You can get {summ} for transfer use command: ``` bitcoin-cli getbalance ```
+
+We can look address for transfer, on the node to which you want to transfer funds, use commands: ``` echo ${BTC_ADDRESS} ```  
+
+3. Check balances and resend any to 0.00000000 
+``` bitcoin-cli getbalance ```
+
+4. Stop processes bitcoind
+```
+$ bitcoin-cli stop
+```
+
+5. Rename wallets
+```
+$ mv ~/.bitcoin/wallet.dat ~/.bitcoin/wallet.bak-$(date +%Y-%m-%d)
+````
+
+6. Start bitcoind 
+```
+$ bitcoind -daemon
+```
+
+7. Import privkeys without triggering rescan
+```
+$ bitcoin-cli importprivkey "$(bitcoin-cli dumpprivkey $BTC_ADDRESS)" "" false
+```
+
+8. Validateaddress ISMINE=TRUE on both addresses
+```
+$ bitcoin-cli validateaddress "${BTC_ADDRESS}
+```
+
+9. Send back ALL BTC and some KMD (From other wallet, or from same wallet to this wallet in other PC)
+```
+$ bitcoin-cli sendtoaddress "1xxx" {summ}  "" "" true
+```
+
+#### Fresh KMD wallet
+##### Auto freshing
+##### Manual freshing
 Notarisations for KMD and BTC is slow. Use instruction to fresh your wallet:
 1. Send BTC away, all of it. If you have access to this wallet on the other machine, skip this
 ```
@@ -135,7 +202,7 @@ Wait some time and verify that notarization processes are smooth
 
 Balance in your node is not growing, check running process mining, if process running, you can check log file ~/.komodo/debug.log
 
-### Did not mine block for more then 2.5h in AR node (check mining!)
+### Did not mine block for more then 25h in AR node (check mining)
 
 Your node is not mining new blocks more then 2.5h, check running process mining, if process running, you can check log file ~/.komodo/debug.log
 
