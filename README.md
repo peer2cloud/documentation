@@ -16,9 +16,9 @@ Table of contents
          * [Auto freshing](#auto-freshing)
          * [Manual freshing](#auto-freshing)
       * [Fresh other wallet](#fresh-other-wallet)
-   * [Balance on node, is not growing for more then 2 hours check mining](#balance-on-node-is-not-growing-for-more-then-2-hours-check-mining)
-   * [Did not mine block for more then 25h in AR node check mining] (#did-not-mine-block-for more-then-25h-in-ar-node-check-mining)
-   * [Dependency](#dependency)
+   * [Update Komodo](#update-komodo)
+   * [Update Iguana](#update-iguana)
+  
 <!--te-->
 
 ### Small count UTXO
@@ -224,12 +224,10 @@ Wait some time and verify that notarization processes are smooth
 2. Run script ~/scripts/auto_fresh_ac_wallet.sh
 
 
-### Count of komodod processes != 2
+### Update Komodo  
 
-One or more process komodod is not running for mining. Please check all mining processes.
-
-### Update Komodo:  
-    Run command:
+Run command:
+    
       ```
       cd ~/komodo
       git pull
@@ -250,9 +248,10 @@ One or more process komodod is not running for mining. Please check all mining p
       komodod  -gen -genproclimit=2 -notary -pubkey="${pubkey}" &
       ./assetchains
       ```
- ### Update Iguana
 
-    Run command:  
+### Update Iguana
+
+Run command:  
        ```
        cd ~
        ./notary
