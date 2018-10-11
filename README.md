@@ -22,6 +22,7 @@ Table of contents
 <!--te-->
 
 ### Small count UTXO
+**Warning: All command run into user komodo**
 We have scripts for auto slit UTXO. But if when it does not work, we must split in manual, and fix for future auto split.
 To split UTXO use a command:
 
@@ -32,7 +33,7 @@ if you receive error :```{"error":"couldnt create duplicates tx","tag":"xxxxxxxx
 (you can use command  to check confirmation ```komodo-cli -ac_name={coin_name} listtransactions```), after confirmation run the command for splitting again
 
 ### Balance is smaller
-
+**Warning: All command run into user komodo**
 You get this message if you balace in fund is < 0.2
 When your balance comes to the critical it’s time to think about topping it up
 You can check balance for this coin in other node, use command:  
@@ -58,6 +59,34 @@ You must urgently start instructions in [Balance is smaller](#balance-is-smaller
 
 ### Last notary BTC was more than 3 hours ago
 If your node wasn’t notarised more than 3 hours ago there can be some problems
+1. Check process iguana, use command: ``` ps aux | grep iguana ```, you must see ```../agents/iguana```, if process crached, run iguana again, use script ```~/notary```
+2. Check update for komodo and iguana
+  2a. update komodo:
+      ```
+      cd ~/komodo
+      git pull
+      ~/komodotools/webworker01/rebuildkomodo
+      ```
+      for restart komodo only for KMD
+      ```
+      komodo-cli stop
+      source ~/komodo/src/pubkey.txt
+      ./src/komodod  -gen -genproclimit=2 -notary -pubkey="${pubkey}" &
+      ```
+      for restart komodo for all coins:
+      ```
+      komodo-cli stop
+      cd komodo/src/
+      ./fiat-cli stop
+      source ~/komodo/src/pubkey.txt
+      komodod  -gen -genproclimit=2 -notary -pubkey="${pubkey}" &
+      ./assetchains
+      ```
+   2b. update iguana
+       ```
+       cd ~
+       ./notary
+       ```
 
 ### Bitcoind process is not running
 
@@ -69,12 +98,14 @@ Your wallet didn’t import the key. You can not notary. To import use command `
 
 ### Iguana process is not running
 
+**Warning: All command run into user komodo**
 Notarisations doesn’t work, this is very bad.  
 Check running process iguana, to start use the command: ```~/notary.sh```
 
 ### Wallet size is too big, time to clean it up!
 
 #### Fresh BTC wallet
+**Warning: All command run into user komodo**
 1. Send BTC away, all of it. If you have access to this wallet on the other machine, skip this
 ```
 $ bitcoin-cli sendtoaddress "ADDRESS" {summ}  "" "" true
@@ -118,14 +149,17 @@ $ bitcoin-cli sendtoaddress "1xxx" {summ}  "" "" true
 
 #### Fresh KMD wallet
 ##### Auto freshing
-##### Manual freshing
-Notarisations for KMD and BTC is slow. Use instruction to fresh your wallet:
-1. Send BTC away, all of it. If you have access to this wallet on the other machine, skip this
-```
-$ bitcoin-cli sendtoaddress "1xxx" {summ}  "" "" true
-```
+**Warning: All command run into user komodo**
 
-2. Send KMD away, all of it. If you have access to this wallet on the other machine, skip this
+1. Run script ~/scripts/auto_fresh_kmd_wallet.sh
+2. Check work komodo, after cleared, use command: ```komodo-cli getbalance ```
+3. Check eork Iguana, after cleared, use commnad: ``` ps aux | grep iguana ```, you must see ```../agents/iguana```, if process crached, run iguana again, use script ```~/notary```
+
+##### Manual freshing  
+Notarisations for KMD and BTC is slow. Use instruction to fresh your wallet:  
+**Warning: All command run into user komodo**
+
+1. Send KMD away, all of it. If you have access to this wallet on the other machine, skip this
 ```
 $ komodo-cli sendtoaddress "Rxxx" {summ} "" "" true
 ```
@@ -134,38 +168,31 @@ $ komodo-cli sendtoaddress "Rxxx" {summ} "" "" true
 
 4. Stop processes bitcoind, komodod & iguana
 ```
-$ pkill -15 iguana
-$ bitcoin-cli stop
 $ komodo-cli stop
 ```
 
 5. Rename both wallets
 ```
-$ mv ~/.komodo/wallet.dat ~/.komodo/wallet.dat.BIG
-$ mv ~/.bitcoin/wallet.dat ~/.bitcoin/wallet.dat.BIG
+$ mv ~/.komodo/wallet.dat ~/.komodo/wallet.bak-$(date +%Y-%m-%d)
 ````
 
 6. Start bitcoind and komodod (only with ./komodod no notary gen stuff)
 ```
-$ bitcoind -daemon
 $ komodo -daemon
 ```
 
 7. Import privkeys without triggering rescan
 ```
-$ bitcoin-cli importprivkey "Kxxx" "" false
 $ komodo-cli  importprivkey "Uxxx" "" false
 ```
 
 8. Validateaddress ISMINE=TRUE on both addresses
 ```
-$ bitcoin-cli validateaddress "1xxx"
 $ komodo-cli validateaddress "Rxxx"
 ```
 
 9. Send back ALL BTC and some KMD (From other wallet, or from same wallet to this wallet in other PC)
 ```
-$ bitcoin-cli sendtoaddress "1xxx" {summ}  "" "" true
 $ komodo-cli sendtoaddress "Rxxx" {summ} "" "" true
 ```
 
@@ -177,35 +204,56 @@ $ komodod -notary -daemon -pubkey="xxxxxxxx"
 11. Check balances on both wallets
 ```
 $ komodo-cli getbalance
-$ bitcoin-cli getbalance
 ```
 
 12. Check wallet sizes, they should be minimal
 
-13. Start iguana, dpow
-```
-$ cd ~/SuperNET/iguana
-$ git checkout dev && git pull && ./m_notary 
-$ cd ~/komodo/src && ./dpowassets
-```
-
 14. Do fresh UTXO splits
 ```
 $ cd ~/SuperNET/iguana
-$ ./acsplit KMD 50
-$ ./acsplit BTC 30
+$ ./acsplit KMD 20
 ```
  
 Wait some time and verify that notarization processes are smooth
 
-### Balance on node, is not growing for more then 2 hours (check mining)
+#### Fresh other wallet
+##### Auto freshing 
+**Warning: All command run into user komodo**
 
-Balance in your node is not growing, check running process mining, if process running, you can check log file ~/.komodo/debug.log
+1. Open for edit script ~/scripts/auto_fresh_ac_wallet.sh, check value for variable ***maxsize*** , recomended use 20000 for check wallets need clear, and use 7000-8000 for clear wallets.
+2. Run script ~/scripts/auto_fresh_ac_wallet.sh
 
-### Did not mine block for more then 25h in AR node (check mining)
-
-Your node is not mining new blocks more then 2.5h, check running process mining, if process running, you can check log file ~/.komodo/debug.log
 
 ### Count of komodod processes != 2
 
 One or more process komodod is not running for mining. Please check all mining processes.
+
+### Update Komodo:  
+    Run command:
+      ```
+      cd ~/komodo
+      git pull
+      ~/komodotools/webworker01/rebuildkomodo
+      ```
+      for restart komodo only for KMD
+      ```
+      komodo-cli stop
+      source ~/komodo/src/pubkey.txt
+      ./src/komodod  -gen -genproclimit=2 -notary -pubkey="${pubkey}" &
+      ```
+      for restart komodo for all coins:
+      ```
+      komodo-cli stop
+      cd komodo/src/
+      ./fiat-cli stop
+      source ~/komodo/src/pubkey.txt
+      komodod  -gen -genproclimit=2 -notary -pubkey="${pubkey}" &
+      ./assetchains
+      ```
+ ### Update Iguana
+
+    Run command:  
+       ```
+       cd ~
+       ./notary
+       ```
