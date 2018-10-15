@@ -106,7 +106,11 @@ Check running process iguana, to start use the command: ```~/notary.sh```
 
 #### Fresh BTC wallet
 **Warning: All command run into user komodo**
-1. Send BTC away, all of it. If you have access to this wallet on the other machine, skip this
+1. Get Private key, you can skip this, if you know private key
+```
+priv_key=$(bitcoin-cli dumpprivkey $BTC_ADDRESS)
+```
+2. Send BTC away, all of it. If you have access to this wallet on the other machine, skip this
 ```
 $ bitcoin-cli sendtoaddress "ADDRESS" {summ}  "" "" true
 ```
@@ -134,12 +138,12 @@ $ bitcoind -daemon
 
 7. Import privkeys without triggering rescan
 ```
-$ bitcoin-cli importprivkey "$(bitcoin-cli dumpprivkey $BTC_ADDRESS)" "" false
+$ bitcoin-cli importprivkey "${priv_key}" "" false
 ```
 
 8. Validateaddress ISMINE=TRUE on both addresses
 ```
-$ bitcoin-cli validateaddress "${BTC_ADDRESS}
+$ bitcoin-cli validateaddress "${BTC_ADDRESS}"
 ```
 
 9. Send back ALL BTC and some KMD (From other wallet, or from same wallet to this wallet in other PC)
@@ -153,13 +157,16 @@ $ bitcoin-cli sendtoaddress "1xxx" {summ}  "" "" true
 
 1. Run script ~/scripts/auto_fresh_kmd_wallet.sh
 2. Check work komodo, after cleared, use command: ```komodo-cli getbalance ```
-3. Check eork Iguana, after cleared, use commnad: ``` ps aux | grep iguana ```, you must see ```../agents/iguana```, if process crached, run iguana again, use script ```~/notary```
+3. Check work Iguana, after cleared, use commnad: ``` ps aux | grep iguana ```, you must see ```../agents/iguana```, if process crached, run iguana again, use script ```~/notary```
 
 ##### Manual freshing  
 Notarisations for KMD and BTC is slow. Use instruction to fresh your wallet:  
 **Warning: All command run into user komodo**
-
-1. Send KMD away, all of it. If you have access to this wallet on the other machine, skip this
+1. Get Private key, you can skip this, if you know private key
+```
+priv_key=$(bitcoin-cli dumpprivkey $KMD_ADDRESS)
+```
+2. Send KMD away, all of it. If you have access to this wallet on the other machine, skip this
 ```
 $ komodo-cli sendtoaddress "Rxxx" {summ} "" "" true
 ```
@@ -178,12 +185,12 @@ $ mv ~/.komodo/wallet.dat ~/.komodo/wallet.bak-$(date +%Y-%m-%d)
 
 6. Start bitcoind and komodod (only with ./komodod no notary gen stuff)
 ```
-$ komodo -daemon
+$ komodod -daemon
 ```
 
 7. Import privkeys without triggering rescan
 ```
-$ komodo-cli  importprivkey "Uxxx" "" false
+$ komodo-cli importprivkey ${priv_key} "" false
 ```
 
 8. Validateaddress ISMINE=TRUE on both addresses
@@ -198,7 +205,8 @@ $ komodo-cli sendtoaddress "Rxxx" {summ} "" "" true
 
 10. When balance > 0 on KMD restart with notary flags
 ```
-$ komodod -notary -daemon -pubkey="xxxxxxxx"
+$ source ~/komodo/src/pubkey.txt
+$ komodod -notary -daemon -pubkey="${pubkey}"
 ```
 
 11. Check balances on both wallets
@@ -208,7 +216,7 @@ $ komodo-cli getbalance
 
 12. Check wallet sizes, they should be minimal
 
-14. Do fresh UTXO splits
+13. Do fresh UTXO splits
 ```
 $ cd ~/SuperNET/iguana
 $ ./acsplit KMD 20
